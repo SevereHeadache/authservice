@@ -1,1 +1,3 @@
-# authservice
+# SevereHeadache/authservice
+
+Authentication service

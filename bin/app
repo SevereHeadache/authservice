@@ -1,0 +1,41 @@
+<?php
+
+declare(strict_types=1);
+
+use League\CLImate\CLImate;
+
+/** @var DI\Container $container */
+$container = require_once __DIR__.'/../bootstrap.php';
+
+$cli = new CLImate();
+
+if (
+    !isset($argv[1]) ||
+    !class_exists($class = 'SevereHeadache\\AuthService\\Commands\\'
+        .str_replace(':', '', ucwords($argv[1], ':')).'Command')
+) {
+    $cli->border()
+        ->out('Usage:')
+        ->lightBlue('php bin/app <command> <...arguments>')
+        ->lightBlue('php bin/app <command> help')
+        ->out('List of commands:')
+        ->tab()->inline('> ')->lightBlue('key:generate')
+        ->tab()->inline('> ')->lightBlue('user:create')
+        ->tab()->inline('> ')->lightBlue('user:list')
+        ->tab()->inline('> ')->lightBlue('user:delete')
+        ->tab()->inline('> ')->lightBlue('user:password')
+        ->tab()->inline('> ')->lightBlue('user:access')
+        ->tab()->inline('> ')->lightBlue('user:reset')
+        ->border();
+
+    exit;
+}
+
+$command = new $class($cli);
+$container->injectOn($command);
+
+if (isset($argv[2]) && $argv[2] === 'help') {
+    $command->help();
+} else {
+    $command->run();
+}

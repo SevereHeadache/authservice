@@ -1,0 +1,87 @@
+openapi: 3.0.3
+info:
+  title: SevereHeadache/authservice
+  version: 1.0.0
+  description: |-
+    Authentication service
+  contact:
+    email: oysterpost@proton.me
+tags:
+  - name: authentication
+    description: User authentication
+paths:
+  /:
+    get:
+      tags:
+        - authentication
+      summary: Authentication with JWT
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+      responses:
+        200:
+          description: Autheticated
+        302:
+          description: Authentication failed, redirect to /form
+  /authenticate:
+    get:
+      tags:
+        - authentication
+      summary: Get HTML authentication form
+      responses:
+        200:
+          description: Authentication form
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticationForm'
+    post:
+      tags:
+        - authentication
+      summary: Issue JWT
+      requestBody:
+        $ref: '#/components/requestBodies/AuthenticationData'
+      responses:
+        200:
+          description: JWT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JWT'
+        302:
+          description: Authentication failed, redirect to /form
+        400:
+          description: Bad request
+
+components:
+  schemas:
+    AuthenticationForm:
+      type: object
+      properties:
+        html:
+          type: string
+          example: '<!DOCTYPE html>\n<html>...</html>'
+    JWT:
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
+  requestBodies:
+    AuthenticationData:
+      description: Authentication data
+      required: true
+      content:
+        application/x-www-form-urlencoded:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              pass:
+                type: string
+            required:
+              - name
+              - pass
