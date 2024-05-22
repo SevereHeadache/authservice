@@ -23,8 +23,18 @@ paths:
       responses:
         200:
           description: Autheticated
-        302:
-          description: Authentication failed, redirect to /form
+        401:
+          description: JWT not provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticationForm'
+        403:
+          description: Authentication failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticationForm'
   /authenticate:
     get:
       tags:
@@ -50,10 +60,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/JWT'
-        302:
-          description: Authentication failed, redirect to /form
         400:
           description: Bad request
+        403:
+          description: Authentication failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticationForm'
 
 components:
   schemas:

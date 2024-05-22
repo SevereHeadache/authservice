@@ -18,10 +18,11 @@ class AuthController extends Controller
     public function index(Request $request, Response $response): Response
     {
         $accessToken = $request->getHeader('Authorization');
-        if (empty($accessToken) || !$this->authService->verifyAccessToken(reset($accessToken))) {
-            return $response
-                ->withHeader('Location', '/authenticate')
-                ->withStatus(302);
+        if (empty($accessToken)) {
+            return $this->form($request, $response->withStatus(401));
+        }
+        if (!$this->authService->verifyAccessToken(reset($accessToken))) {
+            return $this->form($request, $response->withStatus(403));
         }
 
         return $response;
@@ -57,9 +58,7 @@ class AuthController extends Controller
 
             return $response;
         } else {
-            return $response
-                ->withHeader('Location', '/authenticate')
-                ->withStatus(302);
+            return $this->form($request, $response->withStatus(403));
         }
     }
 }
