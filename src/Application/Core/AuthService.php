@@ -8,6 +8,7 @@ use DateTimeImmutable;
 use DI\Attribute\Inject;
 use Doctrine\ORM\EntityManagerInterface;
 use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\Encoding\CannotDecodeContent;
 use Lcobucci\JWT\Encoding\ChainedFormatter;
 use SevereHeadache\AuthService\Domain\User;
 
@@ -67,7 +68,11 @@ class AuthService
     public function verifyAccessToken(string $rawAccessToken): bool
     {
         $parser = $this->config->parser();
-        $accessToken = $parser->parse($rawAccessToken);
+        try {
+            $accessToken = $parser->parse($rawAccessToken);
+        } catch (CannotDecodeContent) {
+            return false;
+        }
 
         $validator = $this->config->validator();
         $validated = $validator->validate(
