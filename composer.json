@@ -43,7 +43,6 @@
     },
     "scripts": {
         "post-install-cmd": [
-            "touch logs/app.log",
             "php bin/app key:generate"
         ]
     }
