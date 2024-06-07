@@ -5,11 +5,13 @@ declare(strict_types=1);
 use SevereHeadache\AuthService\Application\Settings\Settings;
 use SevereHeadache\AuthService\Application\Settings\SettingsInterface;
 use DI\ContainerBuilder;
+use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Validation\Constraint\IssuedBy;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
+use Lcobucci\JWT\Validation\Constraint\ValidAt;
 use Monolog\Logger;
 
 return function (ContainerBuilder $containerBuilder) {
@@ -49,6 +51,7 @@ return function (ContainerBuilder $containerBuilder) {
             $configuration->setValidationConstraints(
                 new SignedWith($configuration->signer(), $configuration->verificationKey()),
                 new IssuedBy(env('TOKEN_ISSUER')),
+                new ValidAt(new SystemClock(new \DateTimeZone(env('TIMEZONE', 'UTC')))),
             );
 
             return $configuration;
