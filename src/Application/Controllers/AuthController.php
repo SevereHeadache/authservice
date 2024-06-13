@@ -21,7 +21,14 @@ class AuthController extends Controller
         if (empty($accessToken)) {
             return $this->form($request, $response->withStatus(401));
         }
-        if (!$this->authService->verifyAccessToken(reset($accessToken))) {
+        $client = $request->getHeader('X-Client');
+        if (
+            empty($client) ||
+            !$this->authService->verifyAccessToken(
+                reset($accessToken),
+                reset($client),
+            )
+        ) {
             return $this->form($request, $response->withStatus(403));
         }
 

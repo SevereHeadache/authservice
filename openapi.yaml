@@ -20,6 +20,10 @@ paths:
           name: Authorization
           schema:
             type: string
+        - in: header
+          name: X-Client
+          schema:
+            type: string
       responses:
         200:
           description: Autheticated

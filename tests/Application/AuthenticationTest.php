@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Application;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use SevereHeadache\AuthService\Application\Core\AuthService;
+use SevereHeadache\AuthService\Domain\Client;
 use SevereHeadache\AuthService\Domain\User;
 use Tests\TestCase;
 
@@ -31,9 +33,13 @@ class AuthenticationTest extends TestCase
 
         $entityManager = $container->get(EntityManagerInterface::class);
 
+        $client = new Client();
+        $client->setName('test');
+        $entityManager->persist($client);
         $user = new User();
         $user->register('test', 'test');
         $entityManager->persist($user);
+        $user->setAccesses(new ArrayCollection([$client]));
         $entityManager->flush();
 
         $request = $this->createRequest(
@@ -49,7 +55,7 @@ class AuthenticationTest extends TestCase
 
         $accessToken = $actual['access_token'];
         $authService = $container->get(AuthService::class);
-        $this->assertTrue($authService->verifyAccessToken($accessToken));
+        $this->assertTrue($authService->verifyAccessToken($accessToken, 'test'));
     }
 
     public function testJWT()
@@ -64,7 +70,10 @@ class AuthenticationTest extends TestCase
         $request = $this->createRequest(
             'GET',
             '/',
-            ['Authorization' => $authService->issueAccessToken()],
+            [
+                'Authorization' => $authService->issueAccessToken(),
+                'X-Client' => 'test',
+            ],
         );
         $response = $app->handle($request);
         $this->assertEquals(200, $response->getStatusCode());

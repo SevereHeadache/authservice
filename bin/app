@@ -3,11 +3,13 @@
 declare(strict_types=1);
 
 use League\CLImate\CLImate;
+use SevereHeadache\AuthService\Commands\Cli\Checkboxes;
 
 /** @var DI\Container $container */
 $container = require_once __DIR__.'/../bootstrap.php';
 
 $cli = new CLImate();
+$cli->extend(Checkboxes::class);
 
 if (
     !isset($argv[1]) ||
@@ -20,12 +22,19 @@ if (
         ->lightBlue('php bin/app <command> help')
         ->out('List of commands:')
         ->tab()->inline('> ')->lightBlue('key:generate')
+        ->tab()->out('---')
         ->tab()->inline('> ')->lightBlue('user:create')
         ->tab()->inline('> ')->lightBlue('user:list')
         ->tab()->inline('> ')->lightBlue('user:delete')
         ->tab()->inline('> ')->lightBlue('user:password')
         ->tab()->inline('> ')->lightBlue('user:access')
         ->tab()->inline('> ')->lightBlue('user:reset')
+        ->tab()->out('---')
+        ->tab()->inline('> ')->lightBlue('client:create')
+        ->tab()->inline('> ')->lightBlue('client:list')
+        ->tab()->out('---')
+        ->tab()->inline('> ')->lightBlue('access:config')
+        ->tab()->inline('> ')->lightBlue('access:set')
         ->border();
 
     exit;

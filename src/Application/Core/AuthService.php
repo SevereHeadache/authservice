@@ -10,6 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Encoding\CannotDecodeContent;
 use Lcobucci\JWT\Encoding\ChainedFormatter;
+use Lcobucci\JWT\Validation\Constraint\PermittedFor;
 use SevereHeadache\AuthService\Domain\User;
 
 class AuthService
@@ -53,10 +54,15 @@ class AuthService
     {
         $tokenBuilder = $this->config->builder(ChainedFormatter::default());
         $lifetime = env('TOKEN_LIFETIME');
-
         $now = new DateTimeImmutable();
+        $audiences = [];
+        foreach ($this->user->getAccesses() as $client) {
+            $audiences[] = $client->getName();
+        }
+
         $accessToken = $tokenBuilder
             ->issuedBy(env('TOKEN_ISSUER'))
+            ->permittedFor(...$audiences)
             ->relatedTo($this->user->getName())
             ->issuedAt($now)
             ->expiresAt($now->modify("+$lifetime seconds"))
@@ -65,7 +71,7 @@ class AuthService
         return $accessToken->toString();
     }
 
-    public function verifyAccessToken(string $rawAccessToken): bool
+    public function verifyAccessToken(string $rawAccessToken, string $client): bool
     {
         $parser = $this->config->parser();
         try {
@@ -77,6 +83,7 @@ class AuthService
         $validator = $this->config->validator();
         $validated = $validator->validate(
             $accessToken,
+            new PermittedFor($client),
             ...$this->config->validationConstraints(),
         );
         if (!$validated) {

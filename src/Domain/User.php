@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace SevereHeadache\AuthService\Domain;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -28,6 +30,13 @@ class User
 
     #[ORM\Column(type: 'boolean', nullable: false)]
     private bool $access = true;
+
+    #[ORM\ManyToMany(targetEntity: Client::class, inversedBy: 'users')]
+    private Collection $clients;
+
+    public function __construct() {
+        $this->clients = new ArrayCollection();
+    }
 
     public function getId(): int
     {
@@ -88,5 +97,15 @@ class User
     public function incrementAttempts(): void
     {
         ++$this->attempts;
+    }
+
+    public function getAccesses(): Collection
+    {
+        return $this->clients;
+    }
+
+    public function setAccesses(Collection $clients): void
+    {
+        $this->clients = $clients;
     }
 }
