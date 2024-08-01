@@ -33,24 +33,30 @@ return function (ContainerBuilder $containerBuilder) {
                     'metadata_dirs' => [PROJECT_PATH . '/src/Domain'],
                     'connection' => [
                         'driver' => 'pdo_pgsql',
-                        'host' => env('DB_HOST'),
+                        'host' => env('DB_HOST', 'localhost'),
                         'port' => env('DB_PORT', 5432),
-                        'dbname' => env('DB_NAME'),
-                        'user' => env('DB_USER'),
-                        'password' => env('DB_PASS'),
+                        'dbname' => env('DB_NAME', 'name'),
+                        'user' => env('DB_USER', 'user'),
+                        'password' => env('DB_PASS', 'pass'),
                         'charset' => 'utf-8'
                     ],
+                ],
+                'app' => [
+                    'name' => env('APP_NAME', 'authservice'),
+                    'token_lifetime' => env('TOKEN_LIFETIME', 1800),
+                    'token_issuer' => env('TOKEN_ISSUER', 'authservice'),
+                    'key' => env('SECRET_KEY', 'secret'),
                 ],
             ]);
         },
         Configuration::class => function () {
             $configuration = Configuration::forSymmetricSigner(
                 new Sha256(),
-                InMemory::plainText(env('SECRET_KEY')),
+                InMemory::plainText(env('SECRET_KEY', 'secret')),
             );
             $configuration->setValidationConstraints(
                 new SignedWith($configuration->signer(), $configuration->verificationKey()),
-                new IssuedBy(env('TOKEN_ISSUER')),
+                new IssuedBy(env('TOKEN_ISSUER', 'authservice')),
                 new ValidAt(new SystemClock(new \DateTimeZone(env('TIMEZONE', 'UTC')))),
             );
 

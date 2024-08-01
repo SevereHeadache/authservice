@@ -8,12 +8,16 @@ use DI\Attribute\Inject;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use SevereHeadache\AuthService\Application\Core\AuthInterface;
+use SevereHeadache\AuthService\Application\Settings\SettingsInterface;
 use Slim\Exception\HttpBadRequestException;
 
 class AuthController extends Controller
 {
     #[Inject]
     protected AuthInterface $authService;
+
+    #[Inject]
+    protected SettingsInterface $settings;
 
     public function index(Request $request, Response $response): Response
     {
@@ -38,7 +42,7 @@ class AuthController extends Controller
     public function form(Request $request, Response $response): Response
     {
         ob_start();
-        $title = env('APP_NAME');
+        $title = $this->settings->get('app')['name'];
         include(self::VIEWS_PATH . '/form.php');
         $content = ob_get_contents();
         ob_end_clean();

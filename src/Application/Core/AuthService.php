@@ -11,6 +11,7 @@ use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Encoding\CannotDecodeContent;
 use Lcobucci\JWT\Encoding\ChainedFormatter;
 use Lcobucci\JWT\Validation\Constraint\PermittedFor;
+use SevereHeadache\AuthService\Application\Settings\SettingsInterface;
 use SevereHeadache\AuthService\Domain\User;
 
 class AuthService implements AuthInterface
@@ -20,6 +21,9 @@ class AuthService implements AuthInterface
 
     #[Inject]
     private Configuration $config;
+
+    #[Inject]
+    protected SettingsInterface $settings;
 
     private User $user;
 
@@ -53,7 +57,7 @@ class AuthService implements AuthInterface
     public function issueAccessToken(): string
     {
         $tokenBuilder = $this->config->builder(ChainedFormatter::default());
-        $lifetime = env('TOKEN_LIFETIME');
+        $lifetime = $this->settings->get('app')['token_lifetime'];
         $now = new DateTimeImmutable();
         $audiences = [];
         foreach ($this->user->getAccesses() as $client) {
@@ -61,7 +65,7 @@ class AuthService implements AuthInterface
         }
 
         $accessToken = $tokenBuilder
-            ->issuedBy(env('TOKEN_ISSUER'))
+            ->issuedBy($this->settings->get('app')['token_issuer'])
             ->permittedFor(...$audiences)
             ->relatedTo($this->user->getName())
             ->issuedAt($now)
