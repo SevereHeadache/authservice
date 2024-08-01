@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SevereHeadache\AuthService\Commands\Cli;
 
 use League\CLImate\TerminalObject\Dynamic\Checkbox\Checkbox;
