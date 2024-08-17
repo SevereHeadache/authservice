@@ -15,5 +15,5 @@ docker exec authservice-php php bin/doctrine orm:schema-tool:create
 
 ## Application CLI
 ```sh
-docker exec authservice-php php bin/app
+docker exec -it authservice-php php bin/app
 ```
