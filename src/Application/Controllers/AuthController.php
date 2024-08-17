@@ -7,13 +7,13 @@ namespace SevereHeadache\AuthService\Application\Controllers;
 use DI\Attribute\Inject;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use SevereHeadache\AuthService\Application\Core\AuthService;
+use SevereHeadache\AuthService\Application\Core\AuthInterface;
 use Slim\Exception\HttpBadRequestException;
 
 class AuthController extends Controller
 {
     #[Inject]
-    protected AuthService $authService;
+    protected AuthInterface $authService;
 
     public function index(Request $request, Response $response): Response
     {

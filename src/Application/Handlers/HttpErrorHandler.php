@@ -25,13 +25,7 @@ class HttpErrorHandler extends SlimErrorHandler
         if ($exception instanceof HttpException) {
             $statusCode = $exception->getCode();
             $payload['message'] = $exception->getMessage();
-        }
-
-        if (
-            !($exception instanceof HttpException)
-            && $exception instanceof Throwable
-            && $this->displayErrorDetails
-        ) {
+        } elseif ($exception instanceof Throwable && $this->displayErrorDetails) {
             $payload['message'] = $exception->getMessage();
         }
 

@@ -6,6 +6,7 @@ namespace Tests\Application;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Container\ContainerInterface;
 use SevereHeadache\AuthService\Application\Core\AuthService;
 use SevereHeadache\AuthService\Domain\Client;
 use SevereHeadache\AuthService\Domain\User;
@@ -28,9 +29,10 @@ class AuthenticationTest extends TestCase
     public function testAuthentication()
     {
         $app = $this->getAppInstance();
-        /** @var \DI\Container $container */
+        /** @var ContainerInterface $container */
         $container = $app->getContainer();
 
+        /** @var EntityManagerInterface $entityManager */
         $entityManager = $container->get(EntityManagerInterface::class);
 
         $client = new Client();
@@ -61,7 +63,7 @@ class AuthenticationTest extends TestCase
     public function testJWT()
     {
         $app = $this->getAppInstance();
-        /** @var \DI\Container $container */
+        /** @var ContainerInterface $container */
         $container = $app->getContainer();
 
         $authService = $container->get(AuthService::class);

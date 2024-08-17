@@ -9,13 +9,14 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
-use Doctrine\ORM\ORMSetup;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Processor\UidProcessor;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use SevereHeadache\AuthService\Application\Core\AuthInterface;
+use SevereHeadache\AuthService\Application\Core\AuthService;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 
@@ -40,7 +41,6 @@ return function (ContainerBuilder $containerBuilder) {
 
             return $logger;
         },
-    ])->addDefinitions([
         EntityManagerInterface::class => function (ContainerInterface $c) {
             $settings = $c->get(SettingsInterface::class)->get('doctrine');
             $isDev = $settings['dev_mode'];
@@ -64,6 +64,9 @@ return function (ContainerBuilder $containerBuilder) {
             $connection = DriverManager::getConnection($settings['connection'], $config);
 
             return new EntityManager($connection, $config);
+        },
+        AuthInterface::class => function (ContainerInterface $c) {
+            return $c->get(AuthService::class);
         }
     ]);
 };

@@ -10,7 +10,7 @@ use SevereHeadache\AuthService\Application\Settings\SettingsInterface;
 use Slim\Factory\AppFactory;
 use Slim\Factory\ServerRequestCreatorFactory;
 
-/** @var DI\Container $container */
+/** @var Psr\Container\ContainerInterface $container */
 $container = require_once __DIR__ . '/../bootstrap.php';
 
 // Instantiate the app

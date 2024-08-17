@@ -13,7 +13,7 @@ use Lcobucci\JWT\Encoding\ChainedFormatter;
 use Lcobucci\JWT\Validation\Constraint\PermittedFor;
 use SevereHeadache\AuthService\Domain\User;
 
-class AuthService
+class AuthService implements AuthInterface
 {
     #[Inject]
     private EntityManagerInterface $entityManager;
